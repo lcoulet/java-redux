@@ -19,6 +19,7 @@ public class Store<S extends State> extends Observable {
      *
      * @param initialState initial state
      * @param reducer reduce function
+     * @return created store
      */
     public static Store create(State initialState, Reducer reducer) {
         return new Store(initialState, reducer);

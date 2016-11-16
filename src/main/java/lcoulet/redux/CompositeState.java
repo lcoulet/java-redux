@@ -1,21 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lcoulet.redux;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import lcoulet.preconditions.Preconditions;
 
 /**
- *
+ * A state that is a composition of other states. Every composed state is mapped
+ * a member property.
+ * 
  * @author Loic.Coulet
  */
-public class CompositeState implements State {
+public class CompositeState implements State<CompositeState> {
 
-    HashMap<String, State> members = new HashMap<>();
+    private HashMap<String, State> members = new HashMap<>();
 
     private CompositeState() {
     }
@@ -32,6 +30,8 @@ public class CompositeState implements State {
     /**
      * Creates a new composite state
      *
+     * @param name name of the property
+     * @param state value of the property
      * @return new composite state with an initial member
      */
     public static CompositeState create(String name, State state) {
@@ -60,8 +60,26 @@ public class CompositeState implements State {
      * @return new state
      */
     public CompositeState with(String name, State state) {
-        assert name != null && !"".equals(name) : "Member name must not be null or empty";
-        assert state != null : "State must not be null";
+        Preconditions.checkStringArgumentContents(name, "Member name must not be null or empty");
+        Preconditions.checkArgument(state != null, "State must not be null");
+        Preconditions.checkArgument(!members.containsKey(name), "There is already a property named: " + name);
+
+        CompositeState results = from(this);
+        results.members.put(name, state);
+        return results;
+    }
+
+    /**
+     * return a copy of the provided state with a changed member
+     *
+     * @param name name of the entry
+     * @param state new member property state
+     * @return new state
+     */
+    public CompositeState change(String name, State state) {
+        Preconditions.checkStringArgumentContents(name, "Member name must not be null or empty");
+        Preconditions.checkArgument(state != null, "State must not be null");
+
         CompositeState results = from(this);
         results.members.put(name, state);
         return results;
@@ -74,7 +92,10 @@ public class CompositeState implements State {
      * @return member value
      */
     public State getMember(String name) {
-        return members.get(name).copy();
+        if (members.containsKey(name)) {
+            return members.get(name).copy();
+        }
+        return NULL_STATE;
     }
 
     /**
@@ -97,7 +118,7 @@ public class CompositeState implements State {
     }
 
     @Override
-    public State copy() {
+    public CompositeState copy() {
         return from(this);
     }
 

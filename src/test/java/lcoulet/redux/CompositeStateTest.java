@@ -1,7 +1,5 @@
 package lcoulet.redux;
 
-import lcoulet.redux.CompositeState;
-import lcoulet.redux.State;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -21,14 +19,14 @@ public class CompositeStateTest {
     }
 
     @Test
-    public void NonEmptyComposite() {
+    public void nonEmptyComposite() {
         CompositeState instance = CompositeState.create("Test", CompositeState.create());
         assertEquals("new instance should have one member", 1, instance.listMembers().size());
         assertTrue("new instance should have one member named Test", instance.listMembers().contains("Test"));
     }
 
     @Test
-    public void ComposeSeveralStates() {
+    public void composeSeveralStates() {
         CompositeState instance = CompositeState.create("Test", CompositeState.create())
                 .with("Another", new DummyState())
                 .with("Yet Another", new DummyState());
@@ -39,7 +37,7 @@ public class CompositeStateTest {
 
 
     @Test
-    public void CopyComposite() {
+    public void copyComposite() {
         CompositeState instance = CompositeState.create("Test", CompositeState.create());
         State copy = instance.copy();
         assertFalse("Copy shall be another refence", copy == instance);
@@ -48,7 +46,7 @@ public class CompositeStateTest {
     }
 
     @Test
-    public void CopyMultiComposite() {
+    public void copyMultiComposite() {
         CompositeState instance = CompositeState
                 .create("Test", CompositeState.create("ohlala", new DummyState()))
                 .with("Another", new DummyState())
@@ -64,6 +62,26 @@ public class CompositeStateTest {
         assertTrue("Copy member shall be same type", copy.getMember("Another") instanceof DummyState);
         assertFalse("Copy member shall be another refence", copy.getMember("Yet Another") == instance.getMember("Yet Another"));
 
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullPropertyNameCompositionShouldFail() {
+        CompositeState
+                .create(null, CompositeState.create("ohlala", new DummyState()));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nullStateNameCompositionShouldFail() {
+        CompositeState
+                .create("ohlala", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void duplicatepropertyInCompositionShouldFail() {
+        CompositeState
+                .create("ohlala", State.NULL_STATE)
+                .with("ohlala", State.NULL_STATE);
     }
 
     private static class DummyState implements State {

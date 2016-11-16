@@ -29,5 +29,5 @@ There also are some side goals:
 -  A CompositeState is a data structure containing a map of states by key (the key being a label)
 -  A CombinedReducer is 
 	-  either a reducers chain 
-	-  of a reducer that applies to a member of a composite state 
+	-  of a set of reducers that applies to specific members of a composite state 
 

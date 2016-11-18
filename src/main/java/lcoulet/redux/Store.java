@@ -15,28 +15,30 @@
  */
 package lcoulet.redux;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.concurrent.CopyOnWriteArrayList;
+import lcoulet.preconditions.Preconditions;
 
 /**
  *
  * @author Loic.Coulet
+ * @param <S> type of state managed by the store
  */
-public class Store<S extends State> extends Observable {
+public class Store<S extends State> {
 
     /**
      * Constructor Factory
      *
+     * @param <S> type of state managed by the created store
      * @param initialState initial state
      * @param reducer reduce function
      * @return created store
      */
-    public static Store create(State initialState, Reducer reducer) {
+    public static <S extends State> Store<S> create(S initialState, Reducer<S> reducer) {
         return new Store(initialState, reducer);
     }
 
-    private final Reducer reducer;
-    private State currentState;
+    private final Reducer<S> reducer;
+    private S currentState;
     private boolean dispatchInProgress = false;
 
     /**
@@ -45,29 +47,50 @@ public class Store<S extends State> extends Observable {
      * @param initialState initial state
      * @param reducer reduce function
      */
-    private Store(State initialState, Reducer reducer) {
+    private Store(S initialState, Reducer<S> reducer) {
         this.reducer = reducer;
         this.currentState = initialState;
     }
 
-    public void subscribe(Observer o) {
-        super.addObserver(o);
+    CopyOnWriteArrayList<Subscriber> subscribers = new CopyOnWriteArrayList<>();
+
+    /**
+     * Subscribe to the store to receive notification of updates
+     *
+     * @param client subscriber
+     */
+    public void subscribe(Subscriber client) {
+        subscribers.add(client);
     }
 
-    public void unsubscribe(Observer o) {
-        super.deleteObserver(o);
+    /**
+     * Subscribe to the store to receive notification of updates
+     *
+     * @param client subscriber
+     */
+    public void unsubscribe(Subscriber client) {
+        subscribers.remove(client);
     }
 
-    public State getCurrentState() {
+    public S getCurrentState() {
         return currentState;
     }
 
     public synchronized void dispatch(Action action) {
-        assert !dispatchInProgress : "A reducer cannot dispatch actions";
+        Preconditions.checkState(!dispatchInProgress, "A reducer cannot dispatch actions");
         dispatchInProgress = true;
+        State oldState = currentState;
         currentState = reducer.apply(currentState, action);
-        notifyObservers();
+        if (oldState != currentState) {
+            notifySubscribers();
+        }
         dispatchInProgress = false;
+    }
+
+    private void notifySubscribers() {
+        for (Subscriber s : subscribers) {
+            s.stateChanged(currentState);
+        }
     }
 
 }

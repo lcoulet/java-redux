@@ -61,14 +61,16 @@ class CounterState implements State<CounterState> {
             if (action == INCREMENT_COUNTER) {
                 s.counter++;
             }
-            if (action == DECREMENT_COUNTER) {
+            else if (action == DECREMENT_COUNTER) {
                 s.counter--;
             }
-            if (action == COUNTER_PLUS_1110) {
+            else if (action == COUNTER_PLUS_1110) {
                 s.counter += 1110;
             }
-            if (action == RESET_OR_INC_COUNTER) {
+            else if (action == RESET_OR_INC_COUNTER) {
                 s.counter++;
+            } else {
+                return currentState;
             }
             return s;
         }

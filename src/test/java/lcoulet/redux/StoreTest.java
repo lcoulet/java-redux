@@ -15,6 +15,7 @@
  */
 package lcoulet.redux;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,8 +32,73 @@ public class StoreTest {
     public void setUp() {
     }
 
-    @Test
-    public void testSomeMethod() {
+    class CounterSubscriber implements Subscriber<CounterState> {
+
+        private int notifications = 0;
+
+        @Override
+        public void stateChanged(CounterState newState) {
+            notifications++;
+        }
+
+        public boolean hasBeenNotified() {
+            return (notifications > 0);
+        }
+
     }
+
+    @Test
+    public void aTriggeredChangeShouldShowItsEffect() {
+        CounterSubscriber witness = new CounterSubscriber();
+
+        Store<CounterState> store = createCounterStore(witness);
+
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+        assertEquals("action should have had an effect on value", 1, store.getCurrentState().counter);
+        assertEquals("action should have had triggered a notification", 1, witness.notifications);
+
+    }
+
+    @Test
+    public void noTriggeredChangeShouldHaveNoEffect() {
+        CounterSubscriber witness = new CounterSubscriber();
+
+        Store<CounterState> store = createCounterStore(witness);
+
+        store.dispatch(Action.NULL_ACTION);
+
+        assertEquals("action should have had no effect on value", 0, store.getCurrentState().counter);
+        assertFalse("action should not have triggered a notification", witness.hasBeenNotified());
+    }
+
+    @Test
+    public void chainedStateChangeShouldHaveASingleEffect() {
+        CounterSubscriber witness1 = new CounterSubscriber();
+        CounterSubscriber witness2 = new CounterSubscriber();
+
+        Store<CounterState> store = Store.create(new CounterState(0),
+                ChainedReducer.create()
+                .with(CounterState.INCREMENT_REDUCER)
+                .with(CounterState.INCREMENT_REDUCER)
+                .with(CounterState.INCREMENT_REDUCER));
+
+        store.subscribe(witness1);
+        store.subscribe(witness2); // another subscriber just to make sure it has no effect on nb notifications
+
+        store.dispatch(Action.NULL_ACTION);
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+
+        assertEquals("action should have had no effect on value", 3, store.getCurrentState().counter);
+        assertEquals("action should have triggered exactly one notification", 1, witness1.notifications);
+        assertEquals("action should have triggered exactly one notification", 1, witness2.notifications);
+
+    }
+
+    public Store<CounterState> createCounterStore(CounterSubscriber witness) {
+        Store<CounterState> store = Store.create(new CounterState(0), CounterState.INCREMENT_REDUCER);
+        store.subscribe(witness);
+        return store;
+    }
+
 
 }

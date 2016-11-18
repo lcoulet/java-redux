@@ -24,7 +24,7 @@ public class Preconditions {
      */
     public static final void checkStringArgumentContents(String toCheck, String message) {
         if (toCheck == null || "".equals(toCheck)) {
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.valueOf(message));
         }
     }
 
@@ -40,7 +40,7 @@ public class Preconditions {
      */
     public static final void checkState(boolean check, String message) {
         if (!check) {
-            throw new IllegalStateException(message);
+            throw new IllegalStateException(String.valueOf(message));
         }
     }
 

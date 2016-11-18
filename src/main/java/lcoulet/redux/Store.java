@@ -60,7 +60,10 @@ public class Store<S extends State> {
      * @param client subscriber
      */
     public void subscribe(Subscriber client) {
-        subscribers.add(client);
+        Preconditions.checkNotNull(client, "Subscriber cannot be null");
+        if (!subscribers.contains(client)) {
+            subscribers.add(client);
+        }
     }
 
     /**
@@ -69,6 +72,7 @@ public class Store<S extends State> {
      * @param client subscriber
      */
     public void unsubscribe(Subscriber client) {
+        Preconditions.checkNotNull(client, "Subscriber cannot be null");
         subscribers.remove(client);
     }
 

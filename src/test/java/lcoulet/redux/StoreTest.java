@@ -94,6 +94,63 @@ public class StoreTest {
 
     }
 
+    @Test
+    public void unSubscribeShouldRemoveSubscriber() {
+        CounterSubscriber witness = new CounterSubscriber();
+
+        Store<CounterState> store = createCounterStore(witness);
+        
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+        assertEquals("action should have had an effect on value", 1, store.getCurrentState().counter);
+        assertEquals("action should have triggered exactly one notification", 1, witness.notifications);
+
+        store.unsubscribe(witness);
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+        assertEquals("action should have had an effect on value", 2, store.getCurrentState().counter);
+        assertEquals("action should have triggered no notification", 1, witness.notifications);
+
+    }
+
+    @Test
+    public void subscribingTwiceShouldConsiderASingleSubscriber() {
+        CounterSubscriber witness = new CounterSubscriber();
+
+        Store<CounterState> store = createCounterStore(witness);
+        store.subscribe(witness);
+
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+        assertEquals("action should have had an effect on value", 1, store.getCurrentState().counter);
+        assertEquals("action should have triggered exactly one notification", 1, witness.notifications);
+
+    }
+
+    private class DefectiveDesignReducer implements Reducer<CounterState> {
+        Store store;
+
+        @Override
+        public CounterState apply(CounterState currentState, Action action) {
+            store.dispatch(CounterState.RESET_OR_INC_COUNTER);
+            return currentState;
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void reducerThatAffetStoreShallBeForbidden() {
+
+        DefectiveDesignReducer reducer = new DefectiveDesignReducer();
+        Store<CounterState> store = Store.create(new CounterState(0), reducer);
+        reducer.store = store;
+
+        store.dispatch(CounterState.INCREMENT_COUNTER);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void nulLSubscriberShouldFail() {
+
+        Store<CounterState> store = createCounterStore(null);
+
+    }
+
     public Store<CounterState> createCounterStore(CounterSubscriber witness) {
         Store<CounterState> store = Store.create(new CounterState(0), CounterState.INCREMENT_REDUCER);
         store.subscribe(witness);

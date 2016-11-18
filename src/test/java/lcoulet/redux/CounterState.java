@@ -41,10 +41,10 @@ class CounterState implements State<CounterState> {
     static Action RESET_OR_INC_COUNTER = new Action() {
     };
 
-    static Reducer RESET_REDUCER = new Reducer() {
+    static Reducer RESET_REDUCER = new Reducer<CounterState>() {
 
         @Override
-        public State apply(State currentState, Action action) {
+        public CounterState apply(CounterState currentState, Action action) {
             CounterState s = (CounterState) currentState.copy();
             if (action == RESET_OR_INC_COUNTER) {
                 s.counter = 0;
@@ -53,10 +53,10 @@ class CounterState implements State<CounterState> {
         }
     };
 
-    static Reducer INCREMENT_REDUCER = new Reducer() {
+    static Reducer INCREMENT_REDUCER = new Reducer<CounterState>() {
 
         @Override
-        public State apply(State currentState, Action action) {
+        public CounterState apply(CounterState currentState, Action action) {
             CounterState s = (CounterState) currentState.copy();
             if (action == INCREMENT_COUNTER) {
                 s.counter++;

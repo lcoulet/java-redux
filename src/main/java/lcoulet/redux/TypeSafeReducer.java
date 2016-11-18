@@ -26,9 +26,8 @@ import lcoulet.preconditions.Preconditions;
  * the * apply method is accepting a State as input
  *
  * @author Loic.Coulet
- * @param <S> the type of state this reducer applies to
  */
-public class TypeSafeReducer<S extends State> implements Reducer {
+public class TypeSafeReducer implements Reducer {
 
     private final Reducer reducer;
 
@@ -37,7 +36,7 @@ public class TypeSafeReducer<S extends State> implements Reducer {
      *
      * @param r
      */
-    public TypeSafeReducer(Reducer<S> r) {
+    public TypeSafeReducer(Reducer r) {
         reducer = r;
     }
 
@@ -46,7 +45,7 @@ public class TypeSafeReducer<S extends State> implements Reducer {
         Preconditions.checkNotNull(currentState, "state cannot be null");
         Preconditions.checkNotNull(action, "action cannot be null");
         try {
-            return reducer.apply((S) currentState, action);
+            return reducer.apply(currentState, action);
         } catch (ClassCastException e) {
             return currentState;
         }

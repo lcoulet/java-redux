@@ -41,7 +41,7 @@ public class TypeSafeReducerTest {
     @Test
     public void typedReducerSHouldNotSendExceptionWhenImproperType() {
         State dummyState = new DummyState();
-        Reducer instance = new TypeSafeReducer<DummyState>(CombinedReducer.create()
+        Reducer instance = new TypeSafeReducer(CombinedReducer.create()
                 .with("Inc1", INCREMENT_REDUCER)
                 .with("Reset", RESET_REDUCER));
 
@@ -53,5 +53,17 @@ public class TypeSafeReducerTest {
         assertEquals(1110, ((CounterState) results).counter);
 
     }
+
+    @Test
+    public void typedReducerShouldApplyOnProperType() {
+        State dummyState = new DummyState();
+        Reducer instance = new TypeSafeReducer(CombinedReducer.create()
+                .with("Inc1", INCREMENT_REDUCER)
+                .with("Reset", RESET_REDUCER));
+
+        CounterState results = (CounterState) instance.apply(new CounterState(0), COUNTER_PLUS_1110);
+        assertEquals(1110, ((CounterState) results).counter);
+    }
+
 
 }

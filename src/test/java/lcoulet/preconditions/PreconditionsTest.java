@@ -55,6 +55,33 @@ public class PreconditionsTest {
     }
 
     @Test
+    public void checkImproperState() {
+        try {
+            Preconditions.checkState(false, FAIL_MSG);
+            fail("Should have sent an exception");
+        } catch (IllegalStateException e) {
+            assertEquals(FAIL_MSG, e.getMessage());
+        }
+    }
+
+    @Test
+    public void checkImproperStateWithNullMessage() {
+        try {
+            Preconditions.checkState(false, null);
+            fail("Should have sent an exception");
+        } catch (IllegalStateException e) {
+            assertEquals("null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void checkValidState() {
+        // test seems empty this is normal
+        // - just checking that no exception is thrown. Tewst would fail otherwise.
+        Preconditions.checkState(true, FAIL_MSG);
+    }
+
+    @Test
     public void checkNotNull() {
         // test seems empty this is normal
         // - just checking that no exception is thrown. Tewst would fail otherwise.

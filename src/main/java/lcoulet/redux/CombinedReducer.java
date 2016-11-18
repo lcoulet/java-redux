@@ -21,13 +21,14 @@ import java.util.Map.Entry;
 import lcoulet.preconditions.Preconditions;
 
 /**
- * represents a combination of reducers (reduction chain). This reduction chain
- * supports composite states and applications of reducers to a sub-part of the
- * state.
+ * Represents a combination of reducers for a composite state. Each reducer can
+ * apply on one single property of the state.
  *
+ * One single action may trigger zero to many reducer(s)
+ * 
  * @author Loic.Coulet
  */
-public class CombinedReducer implements Reducer {
+public class CombinedReducer implements Reducer<CompositeState> {
 
     private final LinkedHashMap<String, Reducer> reducers;
 
@@ -57,16 +58,15 @@ public class CombinedReducer implements Reducer {
     /**
      * adds a reducer in the reducing chain
      *
-     * @param forStateMember if the state is composite this reducer will apply
-     * to the matching member property, otherwise this provides a label to the
-     * reducer
-     * @param reducer reducer to add in the chain.
-     * @return a new combined reducer with augmented reducing chain
+     * @param forStateMember this reducer will only apply to the matching member
+     * property
+     * @param reducer reducer to add in the composition.
+     * @return a new augmented combined reducer
      */
     public CombinedReducer with(String forStateMember, Reducer reducer) {
         Preconditions.checkStringArgumentContents(forStateMember, "Member name must not be null or empty");
         Preconditions.checkArgument(reducer != null, "Cannot combine with a reducer that is a null reference ");
-        Preconditions.checkArgument(!reducers.containsKey(forStateMember), "There's already a reducer for the property " + forStateMember + ", for anity reasons they have to be combined before being added to the chain");
+        Preconditions.checkArgument(!reducers.containsKey(forStateMember), "There's already a reducer for the property " + forStateMember + ", for sanity reasons they have to be chained before being added to the combination");
 
 
         CombinedReducer results = new CombinedReducer(this);
@@ -76,25 +76,22 @@ public class CombinedReducer implements Reducer {
     }
 
     @Override
-    public State apply(State currentState, Action action) {
-        return applyReducingChain(currentState, action, reducers.entrySet().iterator());
+    public CompositeState apply(CompositeState currentState, Action action) {
+        return applyReducersWherePossible(currentState, action, reducers.entrySet().iterator());
     }
 
-    public State applyReducingChain(State currentState, Action action, Iterator<Entry<String, Reducer>> reducers) {
+    public CompositeState applyReducersWherePossible(CompositeState currentState, Action action, Iterator<Entry<String, Reducer>> reducers) {
         if (!reducers.hasNext()) {
             return currentState;
         }
         Entry<String, Reducer> reducerDef = reducers.next();
         String label = reducerDef.getKey();
         Reducer reducer = reducerDef.getValue();
-        State nextState;
-        if (currentState instanceof CompositeState) {
-            State subState = ((CompositeState) currentState).getMember(label);
-            nextState = ((CompositeState) currentState).change(label, reducer.apply(subState, action));
-        } else {
-            nextState = reducerDef.getValue().apply(currentState, action);
-        }
-        return applyReducingChain(
+
+        State subState = currentState.getMember(label);
+        CompositeState nextState = currentState.change(label, reducer.apply(subState, action));
+
+        return applyReducersWherePossible(
                 nextState,
                 action,
                 reducers);

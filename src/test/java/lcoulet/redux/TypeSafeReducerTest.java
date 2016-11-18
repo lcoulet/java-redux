@@ -49,9 +49,6 @@ public class TypeSafeReducerTest {
 
         assertTrue(results == dummyState);
 
-        results = instance.apply(new CounterState(0), COUNTER_PLUS_1110);
-        assertEquals(1110, ((CounterState) results).counter);
-
     }
 
     @Test

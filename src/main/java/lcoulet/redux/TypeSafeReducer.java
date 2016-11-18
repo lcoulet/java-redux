@@ -20,10 +20,11 @@ import lcoulet.preconditions.Preconditions;
 /**
  * Type safe reducer encapsulation. Some reducers may only apply to certain
  * State classes, encapsulating such reducers in this class this avoids casting
- * the State to its sublass within the reducer apply method itself.
+ * the State to its subclass within the reducer apply method itself.
  *
- * Since reducers can apply to any kind of state, it is a design decision that
- * the * apply method is accepting a State as input
+ * Therefore it is possible to use combined reducers and composed states and
+ * reducer applying to only * some types of states.
+ *
  *
  * @author Loic.Coulet
  */
@@ -32,9 +33,11 @@ public class TypeSafeReducer implements Reducer {
     private final Reducer reducer;
 
     /**
-     * Add typing to reducer
+     * Creates a reducer that hides typing from provided reducer. The composed
+     * reducer will apply if the class type is correct, otherwise it won;t apply
+     * and return the state as-provided.
      *
-     * @param r
+     * @param r reducer to encapsulate.
      */
     public TypeSafeReducer(Reducer r) {
         reducer = r;

@@ -23,7 +23,7 @@ import lcoulet.preconditions.Preconditions;
  * represents a chain of reducers (reduction chain).
  * *
  * @author Loic.Coulet
- * @param <S> the type of state supported by this reduction chain
+ * @param <S> the type of state supported by the reduction chain
  */
 public class ChainedReducer<S extends State> implements Reducer<S> {
 
@@ -46,6 +46,7 @@ public class ChainedReducer<S extends State> implements Reducer<S> {
     /**
      * creates a new combined reducer
      *
+     * @param <S> the type of state supported by the reduction chain
      * @return a new combined reducer that does nothing
      */
     public static <S extends State> ChainedReducer<S> create() {

@@ -54,9 +54,9 @@ public class TypeSafeReducerTest {
     @Test
     public void typedReducerShouldApplyOnProperType() {
         State dummyState = new DummyState();
-        Reducer instance = new TypeSafeReducer(CombinedReducer.create()
-                .with("Inc1", INCREMENT_REDUCER)
-                .with("Reset", RESET_REDUCER));
+        Reducer instance = new TypeSafeReducer(ChainedReducer.create()
+                .with(INCREMENT_REDUCER)
+                .with(RESET_REDUCER));
 
         CounterState results = (CounterState) instance.apply(new CounterState(0), COUNTER_PLUS_1110);
         assertEquals(1110, ((CounterState) results).counter);

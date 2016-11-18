@@ -31,3 +31,11 @@ There also are some side goals:
 	-  either a reducers chain 
 	-  of a set of reducers that applies to specific members of a composite state 
 
+
+## What can you do with it?
+
+Maybe nothing, or maybe you could implement your own state machine with it.
+
+It's licensed under Apache license so it's free and safe for reuse.
+
+ 

@@ -42,13 +42,40 @@ public class CompositeStateTest {
 
     @Test
     public void composeSeveralStates() {
-        CompositeState instance = CompositeState.create("Test", CompositeState.create())
-                .with("Another", new DummyState())
-                .with("Yet Another", new DummyState());
+        CompositeState instance = createDummyInstance();
         assertEquals("new instance should have 3 members", 3, instance.listMembers().size());
-        assertTrue("new instance should have one member named Another", instance.listMembers().contains("Another"));
-        assertTrue("new instance should have one member named Yet Another", instance.listMembers().contains("Yet Another"));
+        assertTrue("new instance should have one member named Another", instance.listMembers().contains(DUMMY_MEMBER1));
+        assertTrue("new instance should have one member named Yet Another", instance.listMembers().contains(DUMMY_MEMBER2));
     }
+
+    @Test
+    public void realChangeShouldReturnAnotherState() {
+        CompositeState instance = createDummyInstance();
+
+        CompositeState newInstance = instance.change(DUMMY_MEMBER1, new lcoulet.redux.DummyState());
+
+        assertFalse("Instance should be different after a change", instance == newInstance);
+
+    }
+
+    @Test
+    public void noChangeShouldReturnSameState() {
+        CompositeState instance = createDummyInstance();
+
+        CompositeState newInstance = instance.change(DUMMY_MEMBER1, instance.getMember(DUMMY_MEMBER1));
+
+        assertTrue("Instance should be identical if there is no change", instance == newInstance);
+
+    }
+
+    public CompositeState createDummyInstance() {
+        CompositeState instance = CompositeState.create("Test", CompositeState.create())
+                .with(DUMMY_MEMBER1, new DummyState())
+                .with(DUMMY_MEMBER2, new DummyState());
+        return instance;
+    }
+    public static final String DUMMY_MEMBER2 = "Yet Another";
+    public static final String DUMMY_MEMBER1 = "Another";
 
 
     @Test
@@ -64,8 +91,8 @@ public class CompositeStateTest {
     public void copyMultiComposite() {
         CompositeState instance = CompositeState
                 .create("Test", CompositeState.create("ohlala", new DummyState()))
-                .with("Another", new DummyState())
-                .with("Yet Another", new DummyState());
+                .with(DUMMY_MEMBER1, new DummyState())
+                .with(DUMMY_MEMBER2, new DummyState());
 
         CompositeState copy = (CompositeState) instance.copy();
         assertFalse("Copy shall be another refence", copy == instance);
@@ -73,9 +100,9 @@ public class CompositeStateTest {
         assertFalse("Copy member shall be another refence", copy.getMember("Test") == instance.getMember("Test"));
         assertTrue("Copy member shall be same type", copy.getMember("Test") instanceof CompositeState);
         assertTrue("Copy is recursive", ((CompositeState) copy.getMember("Test")).hasMember("ohlala"));
-        assertFalse("Copy member shall be another refence", copy.getMember("Another") == instance.getMember("Another"));
-        assertTrue("Copy member shall be same type", copy.getMember("Another") instanceof DummyState);
-        assertFalse("Copy member shall be another refence", copy.getMember("Yet Another") == instance.getMember("Yet Another"));
+        assertFalse("Copy member shall be another refence", copy.getMember(DUMMY_MEMBER1) == instance.getMember(DUMMY_MEMBER1));
+        assertTrue("Copy member shall be same type", copy.getMember(DUMMY_MEMBER1) instanceof DummyState);
+        assertFalse("Copy member shall be another refence", copy.getMember(DUMMY_MEMBER2) == instance.getMember(DUMMY_MEMBER2));
 
     }
 

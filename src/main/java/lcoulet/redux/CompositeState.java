@@ -85,7 +85,8 @@ public class CompositeState implements State<CompositeState> {
     }
 
     /**
-     * return a copy of the provided state with a changed member
+     * return a copy of the provided state with a changed member, if member did
+     * not change returns this state
      *
      * @param name name of the entry
      * @param state new member property state
@@ -94,6 +95,11 @@ public class CompositeState implements State<CompositeState> {
     public CompositeState change(String name, State state) {
         Preconditions.checkStringArgumentContents(name, "Member name must not be null or empty");
         Preconditions.checkArgument(state != null, "State must not be null");
+
+        // no change => no new state
+        if (state == members.get(name)) {
+            return this;
+        }
 
         CompositeState results = from(this);
         results.members.put(name, state);
@@ -108,7 +114,7 @@ public class CompositeState implements State<CompositeState> {
      */
     public State getMember(String name) {
         if (members.containsKey(name)) {
-            return members.get(name).copy();
+            return members.get(name);
         }
         return NULL_STATE;
     }

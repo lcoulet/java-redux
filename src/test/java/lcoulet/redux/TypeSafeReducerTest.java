@@ -47,19 +47,32 @@ public class TypeSafeReducerTest {
 
         State results = instance.apply(dummyState, RESET_OR_INC_COUNTER);
 
-        assertTrue(results == dummyState);
+        assertTrue("State should be unchanged", results == dummyState);
+
+    }
+
+    @Test
+    public void typedReducerSHouldNotSendExceptionWhenImproperActionType() {
+        CounterState inputState = new CounterState(0);
+        Reducer instance = new TypeSafeReducer(CombinedReducer.create()
+                .with("Inc1", INCREMENT_REDUCER)
+                .with("Reset", RESET_REDUCER));
+
+        State results = instance.apply(inputState, new Action() {
+        });
+
+        assertTrue("State should be unchanged", results == inputState);
 
     }
 
     @Test
     public void typedReducerShouldApplyOnProperType() {
-        State dummyState = new DummyState();
         Reducer instance = new TypeSafeReducer(ChainedReducer.create()
                 .with(INCREMENT_REDUCER)
                 .with(RESET_REDUCER));
 
         CounterState results = (CounterState) instance.apply(new CounterState(0), COUNTER_PLUS_1110);
-        assertEquals(1110, ((CounterState) results).counter);
+        assertEquals("State should be changed properly", 1110, ((CounterState) results).counter);
     }
 
 

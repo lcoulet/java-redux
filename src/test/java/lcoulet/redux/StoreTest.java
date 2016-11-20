@@ -15,6 +15,7 @@
  */
 package lcoulet.redux;
 
+import lcoulet.redux.CounterState.CounterAction;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,11 +66,14 @@ public class StoreTest {
 
         Store<CounterState> store = createCounterStore(witness);
 
-        store.dispatch(Action.NULL_ACTION);
+        store.dispatch(NULL_COUNTER_ACTION);
 
         assertEquals("action should have had no effect on value", 0, store.getCurrentState().counter);
         assertFalse("action should not have triggered a notification", witness.hasBeenNotified());
     }
+
+    CounterAction NULL_COUNTER_ACTION = new CounterAction() {
+    };
 
     @Test
     public void chainedStateChangeShouldHaveASingleEffect() {
@@ -85,7 +89,7 @@ public class StoreTest {
         store.subscribe(witness1);
         store.subscribe(witness2); // another subscriber just to make sure it has no effect on nb notifications
 
-        store.dispatch(Action.NULL_ACTION);
+        store.dispatch(NULL_COUNTER_ACTION);
         store.dispatch(CounterState.INCREMENT_COUNTER);
 
         assertEquals("action should have had no effect on value", 3, store.getCurrentState().counter);

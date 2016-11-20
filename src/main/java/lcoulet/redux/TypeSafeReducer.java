@@ -19,8 +19,8 @@ import lcoulet.preconditions.Preconditions;
 
 /**
  * Type safe reducer encapsulation. Some reducers may only apply to certain
- * State classes, encapsulating such reducers in this class this avoids casting
- * the State to its subclass within the reducer apply method itself.
+ * classes of State or Action , encapsulating such reducers in this class this
+ * avoids casting * the State to its subclass within the reducer apply method itself.
  *
  * Therefore it is possible to use combined reducers and composed states and
  * reducer applying to only * some types of states.

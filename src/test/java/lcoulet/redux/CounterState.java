@@ -32,19 +32,22 @@ class CounterState implements State<CounterState> {
         return new CounterState(counter);
     }
 
-    static Action INCREMENT_COUNTER = new Action() {
-    };
-    static Action DECREMENT_COUNTER = new Action() {
-    };
-    static Action COUNTER_PLUS_1110 = new Action() {
-    };
-    static Action RESET_OR_INC_COUNTER = new Action() {
+    public static interface CounterAction extends Action {
     };
 
-    static Reducer RESET_REDUCER = new Reducer<CounterState, Action>() {
+    static Action INCREMENT_COUNTER = new CounterAction() {
+    };
+    static Action DECREMENT_COUNTER = new CounterAction() {
+    };
+    static Action COUNTER_PLUS_1110 = new CounterAction() {
+    };
+    static Action RESET_OR_INC_COUNTER = new CounterAction() {
+    };
+
+    static Reducer RESET_REDUCER = new Reducer<CounterState, CounterAction>() {
 
         @Override
-        public CounterState apply(CounterState currentState, Action action) {
+        public CounterState apply(CounterState currentState, CounterAction action) {
             CounterState s = (CounterState) currentState.copy();
             if (action == RESET_OR_INC_COUNTER) {
                 s.counter = 0;
@@ -53,10 +56,10 @@ class CounterState implements State<CounterState> {
         }
     };
 
-    static Reducer INCREMENT_REDUCER = new Reducer<CounterState, Action>() {
+    static Reducer INCREMENT_REDUCER = new Reducer<CounterState, CounterAction>() {
 
         @Override
-        public CounterState apply(CounterState currentState, Action action) {
+        public CounterState apply(CounterState currentState, CounterAction action) {
             CounterState s = (CounterState) currentState.copy();
             if (action == INCREMENT_COUNTER) {
                 s.counter++;

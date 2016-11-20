@@ -27,7 +27,7 @@ package lcoulet.redux;
  * @param <S> the type of state this reducer applies to (for using in a TypeSafe
  * reducer)
  */
-public interface Reducer<S extends State> {
+public interface Reducer<S extends State, A extends Action> {
 
     /**
      * A reducer that has no action.
@@ -41,6 +41,6 @@ public interface Reducer<S extends State> {
      * @param action action to apply
      * @return new state
      */
-    public abstract S apply(S currentState, Action action);
+    public abstract S apply(S currentState, A action);
 
 }

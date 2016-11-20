@@ -25,9 +25,9 @@ import lcoulet.preconditions.Preconditions;
  * @author Loic.Coulet
  * @param <S> the type of state supported by the reduction chain
  */
-public class ChainedReducer<S extends State> implements Reducer<S> {
+public class ChainedReducer<S extends State, A extends Action> implements Reducer<S, A> {
 
-    private final LinkedList<Reducer<S>> reducers;
+    private final LinkedList<Reducer<S, A>> reducers;
 
     private ChainedReducer() {
         reducers = new LinkedList<>();
@@ -49,7 +49,7 @@ public class ChainedReducer<S extends State> implements Reducer<S> {
      * @param <S> the type of state supported by the reduction chain
      * @return a new combined reducer that does nothing
      */
-    public static <S extends State> ChainedReducer<S> create() {
+    public static <S extends State, A extends Action> ChainedReducer<S, A> create() {
         return new ChainedReducer<>();
     }
 
@@ -59,7 +59,7 @@ public class ChainedReducer<S extends State> implements Reducer<S> {
      * @param reducer reducer to add in the chain.
      * @return a new combined reducer with augmented reducing chain
      */
-    public ChainedReducer with(Reducer<S> reducer) {
+    public ChainedReducer with(Reducer<S, A> reducer) {
         Preconditions.checkArgument(reducer != null, "Cannot chain with a reducer that is a null reference ");
 
 
@@ -70,15 +70,15 @@ public class ChainedReducer<S extends State> implements Reducer<S> {
     }
 
     @Override
-    public S apply(S currentState, Action action) {
+    public S apply(S currentState, A action) {
         return applyReducingChain(currentState, action, reducers.iterator());
     }
 
-    public S applyReducingChain(S currentState, Action action, Iterator<Reducer<S>> reducers) {
+    public S applyReducingChain(S currentState, A action, Iterator<Reducer<S, A>> reducers) {
         if (!reducers.hasNext()) {
             return currentState;
         }
-        Reducer<S> reducerDef = reducers.next();
+        Reducer<S, A> reducerDef = reducers.next();
 
         S nextState = reducerDef.apply(currentState, action);
 

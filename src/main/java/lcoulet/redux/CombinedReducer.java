@@ -28,7 +28,7 @@ import lcoulet.preconditions.Preconditions;
  * 
  * @author Loic.Coulet
  */
-public class CombinedReducer implements Reducer<CompositeState> {
+public class CombinedReducer implements Reducer<CompositeState, Action> {
 
     private final LinkedHashMap<String, Reducer> reducers;
 

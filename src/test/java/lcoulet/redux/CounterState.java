@@ -41,7 +41,7 @@ class CounterState implements State<CounterState> {
     static Action RESET_OR_INC_COUNTER = new Action() {
     };
 
-    static Reducer RESET_REDUCER = new Reducer<CounterState>() {
+    static Reducer RESET_REDUCER = new Reducer<CounterState, Action>() {
 
         @Override
         public CounterState apply(CounterState currentState, Action action) {
@@ -53,7 +53,7 @@ class CounterState implements State<CounterState> {
         }
     };
 
-    static Reducer INCREMENT_REDUCER = new Reducer<CounterState>() {
+    static Reducer INCREMENT_REDUCER = new Reducer<CounterState, Action>() {
 
         @Override
         public CounterState apply(CounterState currentState, Action action) {

@@ -124,7 +124,7 @@ public class StoreTest {
 
     }
 
-    private class DefectiveDesignReducer implements Reducer<CounterState> {
+    private class DefectiveDesignReducer implements Reducer<CounterState, Action> {
         Store store;
 
         @Override

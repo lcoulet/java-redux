@@ -33,11 +33,11 @@ public class Store<S extends State> {
      * @param reducer reduce function
      * @return created store
      */
-    public static <S extends State> Store<S> create(S initialState, Reducer<S> reducer) {
+    public static <S extends State> Store<S> create(S initialState, Reducer<S, Action> reducer) {
         return new Store(initialState, reducer);
     }
 
-    private final Reducer<S> reducer;
+    private final Reducer<S, Action> reducer;
     private S currentState;
     private boolean dispatchInProgress = false;
 
@@ -47,7 +47,7 @@ public class Store<S extends State> {
      * @param initialState initial state
      * @param reducer reduce function
      */
-    private Store(S initialState, Reducer<S> reducer) {
+    private Store(S initialState, Reducer<S, Action> reducer) {
         this.reducer = reducer;
         this.currentState = initialState;
     }

@@ -48,7 +48,7 @@ public class ChainedReducerTest {
 
     @Test
     public void chainingAppliesInOrder() {
-        ChainedReducer<CounterState> instance = ChainedReducer.create()
+        ChainedReducer<CounterState, Action> instance = ChainedReducer.create()
                 .with(RESET_REDUCER)
                 .with(INCREMENT_REDUCER);
 

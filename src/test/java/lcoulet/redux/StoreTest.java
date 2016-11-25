@@ -81,7 +81,7 @@ public class StoreTest {
         CounterSubscriber witness2 = new CounterSubscriber();
 
         Store<CounterState> store = Store.create(new CounterState(0),
-                ChainedReducer.create()
+                ReducingChain.create()
                 .with(CounterState.INCREMENT_REDUCER)
                 .with(CounterState.INCREMENT_REDUCER)
                 .with(CounterState.INCREMENT_REDUCER));

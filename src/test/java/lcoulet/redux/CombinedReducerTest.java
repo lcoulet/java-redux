@@ -55,7 +55,7 @@ public class CombinedReducerTest {
                 .with("counter1", new CounterState(1))
                 .with("counter2", new CounterState(2));
 
-        ChainedReducer<CounterState, Action> reducer2 = ChainedReducer.create()
+        ReducingChain<CounterState, Action> reducer2 = ReducingChain.create()
                 .with(RESET_REDUCER)
                 .with(INCREMENT_REDUCER);
 

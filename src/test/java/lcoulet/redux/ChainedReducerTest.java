@@ -35,20 +35,20 @@ public class ChainedReducerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void chainWithNullReducerShallFail() {
-        ChainedReducer instance = ChainedReducer.create();
+        ReducingChain instance = ReducingChain.create();
         instance.with((Reducer) null);
     }
 
     @Test
     public void combineWithEmpty() {
-        ChainedReducer instance = ChainedReducer.create().with(Reducer.NULL_REDUCER);
+        ReducingChain instance = ReducingChain.create().with(Reducer.NULL_REDUCER);
         assertTrue("should return the same state", State.NULL_STATE == instance.apply(State.NULL_STATE, Action.NULL_ACTION));
     }
 
 
     @Test
     public void chainingAppliesInOrder() {
-        ChainedReducer<CounterState, Action> instance = ChainedReducer.create()
+        ReducingChain<CounterState, Action> instance = ReducingChain.create()
                 .with(RESET_REDUCER)
                 .with(INCREMENT_REDUCER);
 
@@ -62,7 +62,7 @@ public class ChainedReducerTest {
         s = instance.apply(s, RESET_OR_INC_COUNTER);
         assertEquals(1, s.counter);
 
-        instance = ChainedReducer.create()
+        instance = ReducingChain.create()
                 .with(INCREMENT_REDUCER)
                 .with(RESET_REDUCER);
 

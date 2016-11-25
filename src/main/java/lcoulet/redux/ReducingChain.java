@@ -20,16 +20,16 @@ import java.util.LinkedList;
 import lcoulet.preconditions.Preconditions;
 
 /**
- * represents a chain of reducers (reduction chain).
- * *
+ * Represents a chain of reducers (reduction chain).
+ *
  * @author Loic.Coulet
  * @param <S> the type of state supported by the reduction chain
  */
-public class ChainedReducer<S extends State, A extends Action> implements Reducer<S, A> {
+public class ReducingChain<S extends State, A extends Action> implements Reducer<S, A> {
 
     private final LinkedList<Reducer<S, A>> reducers;
 
-    private ChainedReducer() {
+    private ReducingChain() {
         reducers = new LinkedList<>();
     }
 
@@ -38,7 +38,7 @@ public class ChainedReducer<S extends State, A extends Action> implements Reduce
      *
      * @param from the source reducer
      */
-    private ChainedReducer(ChainedReducer from) {
+    private ReducingChain(ReducingChain from) {
         this();
         reducers.addAll(from.reducers);
     }
@@ -49,8 +49,8 @@ public class ChainedReducer<S extends State, A extends Action> implements Reduce
      * @param <S> the type of state supported by the reduction chain
      * @return a new combined reducer that does nothing
      */
-    public static <S extends State, A extends Action> ChainedReducer<S, A> create() {
-        return new ChainedReducer<>();
+    public static <S extends State, A extends Action> ReducingChain<S, A> create() {
+        return new ReducingChain<>();
     }
 
     /**
@@ -59,11 +59,11 @@ public class ChainedReducer<S extends State, A extends Action> implements Reduce
      * @param reducer reducer to add in the chain.
      * @return a new combined reducer with augmented reducing chain
      */
-    public ChainedReducer with(Reducer<S, A> reducer) {
+    public ReducingChain with(Reducer<S, A> reducer) {
         Preconditions.checkArgument(reducer != null, "Cannot chain with a reducer that is a null reference ");
 
 
-        ChainedReducer results = new ChainedReducer(this);
+        ReducingChain results = new ReducingChain(this);
 
         results.reducers.add(reducer);
         return results;

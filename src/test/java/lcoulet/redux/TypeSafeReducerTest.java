@@ -67,7 +67,7 @@ public class TypeSafeReducerTest {
 
     @Test
     public void typedReducerShouldApplyOnProperType() {
-        Reducer instance = new TypeSafeReducer(ChainedReducer.create()
+        Reducer instance = new TypeSafeReducer(ReducingChain.create()
                 .with(INCREMENT_REDUCER)
                 .with(RESET_REDUCER));
 

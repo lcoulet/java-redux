@@ -15,6 +15,7 @@
  */
 package lcoulet.redux;
 
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lcoulet.preconditions.Preconditions;
 
@@ -34,12 +35,26 @@ public class Store<S extends State> {
      * @return created store
      */
     public static <S extends State> Store<S> create(S initialState, Reducer<S, Action> reducer) {
-        return new Store(initialState, reducer);
+        return new Store(initialState, reducer, null);
+    }
+
+    /**
+     * Constructor Factory
+     *
+     * @param <S> type of state managed by the created store
+     * @param initialState initial state
+     * @param enhancer enhancer
+     * @param reducer reduce function
+     * @return created store
+     */
+    public static <S extends State> Store<S> create(S initialState, Reducer<S, Action> reducer, Enhancer enhancer) {
+        return new Store(initialState, reducer, enhancer);
     }
 
     private final Reducer<S, Action> reducer;
     private S currentState;
     private boolean dispatchInProgress = false;
+    private final Optional<Enhancer> enhancer;
 
     /**
      * Constructor
@@ -47,9 +62,10 @@ public class Store<S extends State> {
      * @param initialState initial state
      * @param reducer reduce function
      */
-    private Store(S initialState, Reducer<S, Action> reducer) {
+    private Store(S initialState, Reducer<S, Action> reducer, Enhancer enhancer) {
         this.reducer = reducer;
         this.currentState = initialState;
+        this.enhancer = Optional.of(enhancer);
     }
 
     CopyOnWriteArrayList<Subscriber> subscribers = new CopyOnWriteArrayList<>();
@@ -82,6 +98,7 @@ public class Store<S extends State> {
 
     public synchronized void dispatch(Action action) {
         Preconditions.checkState(!dispatchInProgress, "A reducer cannot dispatch actions");
+
         dispatchInProgress = true;
         State oldState = currentState;
         currentState = reducer.apply(currentState, action);
@@ -89,6 +106,9 @@ public class Store<S extends State> {
             notifySubscribers();
         }
         dispatchInProgress = false;
+
+        enhancer.ifPresent(e -> e.dispatch(action));
+
     }
 
     private void notifySubscribers() {
